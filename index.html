@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#16834a">
+  <meta name="description" content="AgriSummarize — source-grounded agricultural extension document summarizer.">
+  <title>AgriSummarize — Agricultural PDF Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Startup watchdog: shows a visible reason when the app cannot initialise (e.g. opened over file://). -->
+  <script>
+    (function () {
+      var report = function (title, detail) {
+        var mount = function () {
+          if (document.getElementById("agriBootError")) return;
+          var box = document.createElement("div");
+          box.id = "agriBootError";
+          box.setAttribute("role", "alert");
+          box.style.cssText = "position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#3b1d1d;color:#fff;font:13px/1.55 system-ui,-apple-system,Segoe UI,sans-serif;padding:14px 18px;display:flex;gap:14px;align-items:flex-start";
+          var text = document.createElement("div");
+          var head = document.createElement("strong");
+          head.textContent = title;
+          text.appendChild(head);
+          var body = document.createElement("div");
+          body.textContent = detail;
+          text.appendChild(body);
+          var close = document.createElement("button");
+          close.textContent = "\u00d7";
+          close.setAttribute("aria-label", "Dismiss message");
+          close.style.cssText = "margin-left:auto;background:transparent;border:0;color:#fff;font-size:19px;line-height:1;cursor:pointer";
+          close.onclick = function () { box.parentNode.removeChild(box); };
+          box.appendChild(text); box.appendChild(close);
+          (document.body || document.documentElement).appendChild(box);
+        };
+        if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount);
+        else mount();
+      };
+      var problems = [];
+      if (location.protocol === "file:") {
+        problems.push("This page was opened as a local file. Browsers block JavaScript modules on file:// URLs, so uploading and API Settings stay dead. Serve the folder over HTTP instead: open a terminal in this folder, run  python -m http.server 5500  and open http://localhost:5500");
+      }
+      window.addEventListener("error", function (e) {
+        if (window.__agriReady) return;
+        problems.push("Startup error: " + (e && e.message ? e.message : "unknown"));
+      });
+      window.addEventListener("load", function () {
+        window.setTimeout(function () {
+          if (problems.length) report("AgriSummarize did not start correctly", problems.join("  \u00b7  "));
+          else if (!window.__agriReady) report("AgriSummarize did not finish starting", "The page is loaded but its JavaScript never initialised, so uploading and API Settings do nothing. Check DevTools (F12) \u2192 Console for the red error line, and make sure app.js and styles.css sit next to index.html.");
+        }, 0);
+      });
+    })();
+  </script>
+</head>
+<body>
+  <div class="ambient ambient-a"></div>
+  <div class="ambient ambient-b"></div>
+
+  <header class="navbar">
+    <a class="brand" href="#home" aria-label="AgriSummarize home">
+      <span class="brand-mark">🌿</span>
+      <span>
+        <strong>AgriSummarize</strong>
+        <small>Farm Practice Intelligence</small>
+      </span>
+    </a>
+    <nav>
+      <a href="#upload">Analyze</a>
+      <a href="#results">Results</a>
+      <a href="#questions">Ask PDF</a>
+      <button class="nav-settings" id="openSettings">API Settings</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero section" id="home">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="pulse-dot"></span> AGR-27 · DOCUMENT-GROUNDED AI</div>
+        <h1>Turn dense farm documents into <span>actionable knowledge.</span></h1>
+        <p>Upload an agricultural extension PDF. AgriSummarize reads the document in your browser, preserves its numbers, conditions, warnings and terminology, then builds a source-grounded summary you can question.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#upload">Analyze a PDF <span>→</span></a>
+          <a class="btn btn-ghost" href="#how">How it works</a>
+        </div>
+        <div class="trust-row">
+          <span>✓ PDF.js extraction</span>
+          <span>✓ Source-only prompting</span>
+          <span>✓ Page references</span>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="orbit-card">
+          <div class="mini-leaf">🌱</div>
+          <div class="orbit-line"></div>
+          <div class="scan-card">
+            <div class="scan-top"><span class="doc-icon">PDF</span><span class="status">SOURCE GROUNDED</span></div>
+            <div class="scan-lines"><i></i><i></i><i></i><i class="short"></i></div>
+            <div class="ai-chip">✦ AI synthesis</div>
+          </div>
+          <div class="floating-stat"><b>100%</b><span>document-first</span></div>
+          <div class="floating-stat second"><b>0</b><span>hardcoded crops</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section workflow" id="how">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">WORKFLOW</span>
+          <h2>From document to decision support</h2>
+        </div>
+        <p>Every stage is visible so a hackathon judge can see what the system actually does.</p>
+      </div>
+      <div class="workflow-grid">
+        <article><span>01</span><div>📄</div><h3>Read</h3><p>Extract text page-by-page with PDF.js and retain page boundaries.</p></article>
+        <article><span>02</span><div>🧩</div><h3>Chunk</h3><p>Large documents are split into manageable evidence blocks.</p></article>
+        <article><span>03</span><div>🧠</div><h3>Synthesize</h3><p>AI is instructed to use only extracted evidence and preserve exact values.</p></article>
+        <article><span>04</span><div>💬</div><h3>Ask</h3><p>Follow-up questions are answered against the uploaded document.</p></article>
+      </div>
+    </section>
+
+    <section class="section upload-section" id="upload">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">DOCUMENT ANALYZER</span>
+          <h2>Upload your agricultural PDF</h2>
+        </div>
+        <div class="privacy-note">🔒 <span>Processed locally until AI analysis is requested. No file is stored by this frontend.</span></div>
+      </div>
+
+      <div class="upload-shell">
+        <div class="drop-zone" id="dropZone" tabindex="0" role="button" aria-label="Upload a PDF: click here, press Enter, or drop a PDF file anywhere on the page">
+          <input type="file" id="fileInput" accept="application/pdf,.pdf" hidden>
+          <div class="upload-icon">↥</div>
+          <h3>Drop your PDF here</h3>
+          <p>or <button class="link-btn" id="browseBtn">browse from your device</button></p>
+          <small>PDF only · Text-based PDFs are supported best</small>
+        </div>
+
+        <div class="file-preview hidden" id="filePreview">
+          <div class="file-main">
+            <div class="pdf-badge">PDF</div>
+            <div><strong id="fileName">document.pdf</strong><span id="fileMeta">0 MB · 0 pages</span></div>
+          </div>
+          <button class="icon-btn" id="removeFile" title="Remove file">×</button>
+        </div>
+
+        <div class="api-inline hidden" id="apiInline">
+          <div><span class="key-icon">🔑</span><div><strong>AI key required</strong><p>Add your Gemini API key in API Settings before analysis.</p></div></div>
+          <button class="btn btn-dark" id="inlineSettings">Add key</button>
+        </div>
+
+        <button class="btn btn-primary analyze-btn" id="analyzeBtn" disabled><span>✦</span> Analyze document</button>
+        <p class="micro-copy">The AI receives extracted document text, not your original PDF file.</p>
+      </div>
+    </section>
+
+    <section class="processing hidden" id="processing">
+      <div class="processing-card">
+        <div class="loader-ring"></div>
+        <div class="processing-copy">
+          <span class="eyebrow">LIVE PROCESSING</span>
+          <h2 id="processingTitle">Reading your document…</h2>
+          <p id="processingDetail">Preparing page-aware evidence.</p>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="stage-list" id="stageList">
+          <div data-stage="upload"><span>01</span> Uploading document <b>○</b></div>
+          <div data-stage="extract"><span>02</span> Reading PDF & extracting text <b>○</b></div>
+          <div data-stage="understand"><span>03</span> Understanding document <b>○</b></div>
+          <div data-stage="topics"><span>04</span> Identifying evidence & topics <b>○</b></div>
+          <div data-stage="summary"><span>05</span> Generating detailed summary <b>○</b></div>
+          <div data-stage="prepare"><span>06</span> Preparing results <b>○</b></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section results-section hidden" id="results">
+      <div class="result-header">
+        <div>
+          <span class="eyebrow">ANALYSIS COMPLETE</span>
+          <h2 id="resultTitle">Document results</h2>
+          <p id="resultSubtitle"></p>
+        </div>
+        <div class="result-actions">
+          <button class="btn btn-ghost" id="copyBtn">Copy summary</button>
+          <button class="btn btn-primary" id="downloadBtn">Download .txt</button>
+        </div>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric-card"><span>Pages read</span><strong id="metricPages">—</strong><small>PDF pages processed</small></div>
+        <div class="metric-card"><span>Extracted text</span><strong id="metricChars">—</strong><small>characters available to AI</small></div>
+        <div class="metric-card"><span>Evidence blocks</span><strong id="metricChunks">—</strong><small>page-aware chunks</small></div>
+        <div class="metric-card accent"><span>Grounding mode</span><strong>PDF-only</strong><small>no external crop facts</small></div>
+      </div>
+
+      <div class="result-grid">
+        <article class="content-card summary-card">
+          <div class="card-title"><span>✦</span><h3>Detailed summary</h3><span class="source-pill">SOURCE GROUNDED</span></div>
+          <div class="markdown-content" id="summaryContent"></div>
+        </article>
+
+        <aside class="side-stack">
+          <article class="content-card">
+            <div class="card-title"><span>🎯</span><h3>Main topic</h3></div>
+            <p class="topic-value" id="mainTopic">—</p>
+          </article>
+          <article class="content-card">
+            <div class="card-title"><span>🔢</span><h3>Important numbers</h3></div>
+            <ul class="fact-list" id="numbersList"><li>—</li></ul>
+          </article>
+          <article class="content-card warning-card">
+            <div class="card-title"><span>⚠</span><h3>Warnings & precautions</h3></div>
+            <ul class="fact-list" id="warningsList"><li>—</li></ul>
+          </article>
+        </aside>
+      </div>
+
+      <div class="result-grid lower">
+        <article class="content-card">
+          <div class="card-title"><span>📌</span><h3>Recommendations</h3></div>
+          <ul class="fact-list" id="recommendationsList"><li>—</li></ul>
+        </article>
+        <article class="content-card">
+          <div class="card-title"><span>📚</span><h3>Key terminology</h3></div>
+          <div class="tag-cloud" id="termsList"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section qa-section hidden" id="questions">
+      <div class="section-heading">
+        <div><span class="eyebrow">DOCUMENT Q&A</span><h2>Ask anything about the PDF</h2></div>
+        <p>Answers are constrained to the uploaded document. Follow-up questions remain in this conversation.</p>
+      </div>
+      <div class="qa-shell">
+        <div class="chat-log" id="chatLog">
+          <div class="assistant-bubble"><span>✦</span><p>Your document is ready. Ask about a method, dosage, condition, page, warning or recommendation.</p></div>
+        </div>
+        <form class="question-form" id="questionForm">
+          <input id="questionInput" autocomplete="off" placeholder="e.g. What fertilizer is recommended, and under what conditions?" required>
+          <button class="send-btn" type="submit">↑</button>
+        </form>
+        <div class="suggestions">
+          <button data-q="What are the main recommendations in the document?">Main recommendations</button>
+          <button data-q="What warnings or precautions are mentioned?">Warnings</button>
+          <button data-q="Explain the cultivation procedure described in the document.">Cultivation procedure</button>
+          <button data-q="What important numbers, measurements or dosages are given?">Important numbers</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section translation-section hidden" id="translation">
+      <div class="translation-card">
+        <div><span class="eyebrow">LANGUAGE</span><h2>Take the complete result to your language</h2><p>Facts, values, units and source references are preserved while the generated content is translated. Choose <strong>English</strong> at any time to restore the original English summary.</p></div>
+        <div class="translation-controls"><select id="languageSelect"><option value="English">English</option><option value="Tamil">Tamil</option><option value="Hindi">Hindi</option><option value="Malayalam">Malayalam</option><option value="Telugu">Telugu</option><option value="Kannada">Kannada</option><option value="Bengali">Bengali</option><option value="Marathi">Marathi</option></select><button class="btn btn-primary" id="translateBtn">Translate complete summary</button></div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div><strong>AgriSummarize</strong> · AGR-27</div><span>Document-grounded agricultural extension intelligence</span></footer>
+
+  <dialog id="settingsDialog">
+    <form method="dialog" class="settings-modal" id="settingsForm">
+      <button class="close-dialog" type="button" id="cancelSettings" aria-label="Close settings">×</button>
+      <span class="eyebrow">AI CONFIGURATION</span>
+      <h2>Connect Gemini</h2>
+      <p>Your key is kept in this browser's local storage and used directly from the frontend. It is not embedded into the project source.</p>
+      <label>Gemini API key<input id="apiKeyInput" type="password" placeholder="Paste your API key"></label>
+      <label>Model<input id="modelInput" value="gemini-3.6-flash" spellcheck="false"></label>
+      <div class="security-callout">⚠️ Frontend-only means the key can be inspected by a browser user. For a public production deployment, use a server-side proxy or provider-supported browser-safe auth.</div>
+      <div class="modal-actions"><button class="btn btn-ghost" type="button" id="cancelSettingsBtn">Cancel</button><button class="btn btn-primary" type="submit" id="saveSettings">Save settings</button></div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
